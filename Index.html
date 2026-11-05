@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050914">
+<title>DELYARO V1</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#050914;
+ color:#eaf6ff;
+ font-family:Arial,sans-serif;
+ text-align:center;
+ padding:25px 15px;
+}
+.container{max-width:600px;margin:auto}
+.logo{
+ width:130px;height:130px;
+ border:2px solid #20baff;
+ border-radius:50%;
+ display:grid;place-items:center;
+ margin:30px auto;
+ color:#40caff;font-size:55px;
+ box-shadow:0 0 30px #087dff;
+}
+h1{color:#39caff;letter-spacing:4px}
+.subtitle{color:#829ab5;font-size:12px;letter-spacing:3px}
+.card{
+ background:#0c1930;
+ border:1px solid #17436b;
+ border-radius:15px;
+ padding:20px;margin:20px 0;
+}
+button{
+ background:#087dc7;color:white;
+ border:1px solid #39caff;
+ border-radius:10px;
+ padding:13px 18px;
+ margin:5px;cursor:pointer;
+}
+input{
+ width:100%;padding:14px;
+ background:#050d1c;color:white;
+ border:1px solid #2875a4;
+ border-radius:10px;
+}
+#answer{color:#bceaff;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="logo">◉</div>
+
+<h1>DELYARO V1</h1>
+<div class="subtitle">PERSONAL ARTIFICIAL INTELLIGENCE</div>
+
+<div class="card">
+<h3>STATUS SISTEM</h3>
+<p id="status">● ONLINE — SIAP DIGUNAKAN</p>
+</div>
+
+<div class="card">
+<h3>ASISTEN DELYARO</h3>
+<p id="answer">Selamat datang, Tuan. Saya DELYARO V1. Ada yang bisa saya bantu?</p>
+<button onclick="startVoice()">🎙️ MULAI BICARA</button>
+<button onclick="speak()">🔊 ULANGI SUARA</button>
+</div>
+
+<div class="card">
+<h3>KIRIM PERINTAH</h3>
+<input id="command" placeholder="Ketik perintah untuk DELYARO">
+<br><br>
+<button onclick="sendCommand()">KIRIM</button>
+</div>
+
+</div>
+
+<script>
+let lastAnswer="Selamat datang, Tuan. Saya DELYARO V1.";
+
+function respond(text){
+ let q=text.toLowerCase();
+ let result="Baik, Tuan. Saya menerima perintah Anda. Saya masih dalam tahap pengembangan.";
+
+ if(q.includes("halo")||q.includes("hai"))
+ result="Halo, Tuan. DELYARO V1 siap membantu.";
+
+ else if(q.includes("nama"))
+ result="Nama saya DELYARO V1, asisten digital pribadi Tuan.";
+
+ else if(q.includes("kabar"))
+ result="Sistem saya berjalan dengan baik, Tuan.";
+
+ else if(q.includes("waktu")||q.includes("jam"))
+ result="Sekarang pukul "+new Date().toLocaleTimeString("id-ID");
+
+ else if(q.includes("youtube"))
+ result="Baik, Tuan. Membuka YouTube.";
+ 
+ lastAnswer=result;
+ document.getElementById("answer").innerText=result;
+ speak();
+ if(q.includes("youtube")) window.open("https://youtube.com","_blank");
+}
+
+function sendCommand(){
+ let input=document.getElementById("command");
+ if(input.value.trim()){
+ respond(input.value);
+ input.value="";
+ }
+}
+
+function speak(){
+ if(!("speechSynthesis" in window))return;
+ speechSynthesis.cancel();
+ let voice=new SpeechSynthesisUtterance(lastAnswer);
+ voice.lang="id-ID";
+ voice.rate=0.9;
+ speechSynthesis.speak(voice);
+}
+
+function startVoice(){
+ const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!Speech){
+ document.getElementById("status").innerText="Browser belum mendukung pengenalan suara.";
+ return;
+ }
+ let recognition=new Speech();
+ recognition.lang="id-ID";
+ recognition.onstart=()=>document.getElementById("status").innerText="● SEDANG MENDENGARKAN";
+ recognition.onresult=e=>respond(e.results[0][0].transcript);
+ recognition.onerror=()=>document.getElementById("status").innerText="Mikrofon mengalami kendala.";
+ recognition.onend=()=>document.getElementById("status").innerText="● ONLINE";
+ recognition.start();
+}
+</script>
+</body>
+</html>
